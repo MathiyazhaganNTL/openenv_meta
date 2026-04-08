@@ -7,7 +7,8 @@ from openai import OpenAI
 # ENV VARIABLES (STRICT)
 # =============================
 API_BASE_URL = os.environ.get("API_BASE_URL")
-API_KEY = os.environ.get("API_KEY")
+# Prefer OPENAI_API_KEY, but keep API_KEY as a backward-compatible fallback.
+API_KEY = os.environ.get("OPENAI_API_KEY") or os.environ.get("API_KEY")
 MODEL_NAME = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 
 ENV_URL = "http://localhost:7860"
@@ -16,10 +17,11 @@ ENV_URL = "http://localhost:7860"
 # 🔥 GLOBAL LLM CLIENT
 # =============================
 try:
-    client = OpenAI(
-        base_url=API_BASE_URL,
-        api_key=API_KEY
-    )
+    client_kwargs = {"api_key": API_KEY}
+    if API_BASE_URL:
+        client_kwargs["base_url"] = API_BASE_URL
+
+    client = OpenAI(**client_kwargs)
     print("✅ LLM CLIENT INITIALIZED", flush=True)
 except Exception as e:
     print(f"❌ CLIENT INIT FAILED: {e}", flush=True)

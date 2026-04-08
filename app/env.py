@@ -53,8 +53,8 @@ class SupportDeskEnv:
             self.state_data.history.append({"role": "user", "content": self.state_data.user_message})
 
         return {
-            "observation": self.state_data.dict(),
-            "reward": reward.dict(),
+            "observation": self.state_data.model_dump(),
+            "reward": reward.model_dump(),
             "done": done,
             "info": {"expected_category": self.expected_category, "task_score": task_score}
         }

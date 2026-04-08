@@ -19,13 +19,13 @@ def root():
 async def reset(req: dict = {}):
     level = req.get("level", "medium")
     obs = await env.reset(level)
-    return {"observation": obs.dict()}
+    return {"observation": obs.model_dump()}
 
 # Optional GET (for browser testing)
 @app.get("/reset")
 async def reset_get():
     obs = await env.reset("medium")
-    return {"observation": obs.dict()}
+    return {"observation": obs.model_dump()}
 
 # -----------------------------
 # STEP
@@ -41,7 +41,7 @@ async def step(action: Action):
 @app.get("/state")
 async def state():
     obs = await env.state()
-    return {"observation": obs.dict()}
+    return {"observation": obs.model_dump()}
 
 # -----------------------------
 # RUN SERVER
