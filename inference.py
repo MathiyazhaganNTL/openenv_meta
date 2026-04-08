@@ -17,11 +17,13 @@ ENV_URL = "http://localhost:7860"
 # 🔥 GLOBAL LLM CLIENT
 # =============================
 try:
-    client_kwargs = {"api_key": API_KEY}
-    if API_BASE_URL:
-        client_kwargs["base_url"] = API_BASE_URL
+    if not API_KEY:
+        raise ValueError("Missing OPENAI_API_KEY/API_KEY environment variable")
 
-    client = OpenAI(**client_kwargs)
+    if API_BASE_URL:
+        client = OpenAI(api_key=API_KEY, base_url=API_BASE_URL)
+    else:
+        client = OpenAI(api_key=API_KEY)
     print("✅ LLM CLIENT INITIALIZED", flush=True)
 except Exception as e:
     print(f"❌ CLIENT INIT FAILED: {e}", flush=True)
@@ -46,10 +48,8 @@ def get_llm_action(issue):
         print("✅ LLM RESPONSE RECEIVED", flush=True)
 
         # Extract text safely
-        output_text = ""
-        try:
-            output_text = response.output[0].content[0].text
-        except:
+        output_text = (getattr(response, "output_text", None) or "").strip()
+        if not output_text:
             output_text = "I'll help you with this."
 
         return {
